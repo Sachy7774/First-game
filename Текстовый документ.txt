@@ -1,0 +1,87 @@
+import pygame
+
+pygame.init()
+win = pygame.display.set_mode((500, 500)) #размер окна
+pygame.display.set_caption("Игра начинается") #заголовок окна
+
+walkright = [pygame.image.load('frame-1.png'), pygame.image.load('frame-2.png')]
+walkleft = [pygame.image.load('frame-1.png'), pygame.image.load('frame-2.png')]
+
+playerStand = pygame.image.load('frame-1.png')
+bg = pygame.image.load('les.png')
+
+clock = pygame.time.Clock() 
+x = 50 #координат
+y = 425 #координат
+r = 40 #радиус
+width = 40
+height = 60
+speedd = 5
+
+isJump = False
+jumpCount = 10
+
+left = False
+right = False
+animCount = 0
+
+def dw():
+    win.blit(bg, (0,0))
+    pygame.display.update()
+    
+    global animCount
+    if animCount + 1 >= 40:
+        animCount = 0
+    if left:
+        win.blit(walkleft[animCount // 5], (x,y))
+        animCount += 1
+    elif right:
+        win.blit(walkright[animCount // 5], (x,y))
+        animCount += 1
+    else: 
+        win.blit(playerStand, (x,y))
+    #pygame.draw.circle(win, (116, 66, 200), (x, y), r)
+    #pygame.draw.rect(win, (0,0,255), (x, y, width, height))
+    
+
+run = True
+while run:
+    clock.tick(40)
+    #pygame.time.delay(40)# 0,1 сек
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+    keys = pygame.key.get_pressed()
+
+    if keys[pygame.K_LEFT] and x > 5:
+        x -= speedd
+        left = True
+        right = False
+    elif keys[pygame.K_RIGHT] and x < 500 - width - 5:
+        x += speedd
+        left = False
+        right = True
+
+    else: 
+        left = False
+        right = False
+        animCount = 0
+
+    if not(isJump):  
+        if keys[pygame.K_UP] and y > 5:
+            y -= speedd
+        if keys[pygame.K_DOWN] and y < 500 - height - 5:
+            y += speedd
+        if keys[pygame.K_SPACE]:
+            isJump = True
+    else:
+        if jumpCount >= -10:
+            y -= jumpCount * 2
+            jumpCount -= 1
+        else:
+            isJump = False
+            jumpCount = 10
+            
+dw()
+pygame.quit()
